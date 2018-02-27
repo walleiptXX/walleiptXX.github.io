@@ -6,14 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018/2 | Hexo</title>
+  <title>PostgreSQL源码安装 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2018/02/index.html">
+  <meta name="description" content="1. 下载源码1wget https://ftp.postgresql.org/pub/source/v9.6.2/postgresql-9.6.2.tar.gz 2. 配置编译安装1234567891011A.解压:tar -zxvf ./postgresql-9.5.5.tar.gzB.设置安装目录：./configure --prefix=/usr/local/postgresqlC.编译源">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PostgreSQL源码安装">
+<meta property="og:url" content="http://yoursite.com/2018/02/27/PostgreSQL源码安装/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. 下载源码1wget https://ftp.postgresql.org/pub/source/v9.6.2/postgresql-9.6.2.tar.gz 2. 配置编译安装1234567891011A.解压:tar -zxvf ./postgresql-9.5.5.tar.gzB.设置安装目录：./configure --prefix=/usr/local/postgresqlC.编译源">
+<meta property="og:updated_time" content="2018-02-27T09:47:28.704Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="PostgreSQL源码安装">
+<meta name="twitter:description" content="1. 下载源码1wget https://ftp.postgresql.org/pub/source/v9.6.2/postgresql-9.6.2.tar.gz 2. 配置编译安装1234567891011A.解压:tar -zxvf ./postgresql-9.5.5.tar.gzB.设置安装目录：./configure --prefix=/usr/local/postgresqlC.编译源">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -149,76 +153,165 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-PostgreSQL源码安装" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/02/27/Postgres数据储存和缓存/" class="archive-article-date">
-  	<time datetime="2018-02-27T09:47:43.698Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-27</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/02/27/Postgres数据储存和缓存/">Postgres数据储存和缓存</a>
+    <h1 class="article-title" itemprop="name">
+      PostgreSQL源码安装
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/02/27/PostgreSQL源码安装/" class="archive-article-date">
+        
+        <a href="/2018/02/27/PostgreSQL源码安装/" class="archive-article-date">
   	<time datetime="2018-02-27T09:46:19.412Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-27</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/02/27/PostgreSQL源码安装/">PostgreSQL源码安装</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="1-下载源码"><a href="#1-下载源码" class="headerlink" title="1. 下载源码"></a>1. 下载源码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://ftp.postgresql.org/pub/source/v9.6.2/postgresql-9.6.2.tar.gz</span><br></pre></td></tr></table></figure>
+<h3 id="2-配置编译安装"><a href="#2-配置编译安装" class="headerlink" title="2. 配置编译安装"></a>2. 配置编译安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">A.解压:</span><br><span class="line">tar -zxvf ./postgresql-9.5.5.tar.gz</span><br><span class="line"></span><br><span class="line">B.设置安装目录：</span><br><span class="line">./configure --prefix=/usr/local/postgresql</span><br><span class="line"></span><br><span class="line">C.编译源码：</span><br><span class="line">make</span><br><span class="line"></span><br><span class="line">D.安装：</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<h3 id="3-用户权限与环境变量"><a href="#3-用户权限与环境变量" class="headerlink" title="3. 用户权限与环境变量"></a>3. 用户权限与环境变量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">A.添加用户(postgreSQL不允许使用root身份操作)：</span><br><span class="line">useradd postgres</span><br><span class="line"></span><br><span class="line">B.配置目录访问权限：</span><br><span class="line">chown -R postgres:postgres /usr/local/postgresql/</span><br><span class="line"></span><br><span class="line">C.环境变量(主要为了方便操作postgreSQL命令)：</span><br><span class="line">PGHOME=/usr/local/postgresql</span><br><span class="line">export PGHOME</span><br><span class="line">PGDATA=/usr/local/postgresql/data</span><br><span class="line">export PGDATA</span><br><span class="line"></span><br><span class="line">PATH=$PATH:$HOME/bin:$HOME/.local/bin:$PGHOME/bin</span><br><span class="line"></span><br><span class="line">export PATH</span><br><span class="line"></span><br><span class="line">D.测试环境变量：</span><br><span class="line">which psql</span><br><span class="line">psql -V</span><br></pre></td></tr></table></figure>
+<h3 id="4-初始化数据库"><a href="#4-初始化数据库" class="headerlink" title="4. 初始化数据库"></a>4. 初始化数据库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">A.初始化数据库：</span><br><span class="line">initdb</span><br><span class="line"></span><br><span class="line">B.配置信任的ip:</span><br><span class="line">vi /usr/local/postgresql/data/pg_hba.conf</span><br><span class="line"></span><br><span class="line">C.修改IP4信任地址：</span><br><span class="line">127.0.0.1/32修改为：0.0.0.0/0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">D.修改postgresql.conf文件</span><br><span class="line">listen_addresses=&apos;*&apos;</span><br><span class="line">port = 5432</span><br><span class="line"></span><br><span class="line">data目录介绍：</span><br><span class="line"></span><br><span class="line">    base:目录是表空间目录</span><br><span class="line">    global:目录是相关全局变量的目录</span><br><span class="line">    pg_hba.conf:访问控制配置（127.0.0.1改为信任的客户端ip网段使其可以远程访问）</span><br><span class="line">    postgresql.conf:一个是postgresql主配置文件（listen_address=localhost改为星号使其监听整个网络）</span><br></pre></td></tr></table></figure>
+<h3 id="5-启动和连接"><a href="#5-启动和连接" class="headerlink" title="5. 启动和连接"></a>5. 启动和连接</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">A.创建日志目录：</span><br><span class="line">mkdir -v /usr/local/postgresql/log</span><br><span class="line"></span><br><span class="line">B.启动数据：</span><br><span class="line">pg_ctl start -l /usr/local/postgresql/log/pg_server.log</span><br><span class="line"></span><br><span class="line">C.连接数据库:</span><br><span class="line">psql</span><br><span class="line"></span><br><span class="line">D.设置postgres的密码：</span><br><span class="line">\password</span><br><span class="line"></span><br><span class="line">E.查看数据列表:</span><br><span class="line">\l</span><br></pre></td></tr></table></figure>
+<h3 id="额外补充"><a href="#额外补充" class="headerlink" title="额外补充"></a>额外补充</h3><p>在调试postgreSQL还需要一些源码提供的额外工具；例如oid2name和pg_buffercache等可查找到相关源码然后安装参考如下命令:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">搜索源码关键字</span><br><span class="line">grep pg_buffercache</span><br><span class="line"></span><br><span class="line">进入源码目录</span><br><span class="line">cd contrib/pg_buffercache</span><br><span class="line"></span><br><span class="line">编译&amp;&amp;安装</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure></p>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/02/27/PostgreSQL源码安装/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2018/02/27/Postgres数据储存和缓存/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Postgres数据储存和缓存
+        
+      </div>
+    </a>
   
   
-    </div></section>
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -241,8 +334,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

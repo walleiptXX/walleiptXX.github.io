@@ -6,14 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018/2 | Hexo</title>
+  <title>Postgres数据储存和缓存 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2018/02/index.html">
+  <meta name="description" content="1.简介  此文主要针对postgreSQL对数据存放和数据的缓存结构和规则进行简单的分析。文章分为数据表和存储文件映射关系，数据缓存加载过程以及缓存中的page结构；由外到内的分析了数据存储与缓存相关内容。  2.如何查看数据表和存储文件映射关系 模    型： 名词解释： /data/base/: 一般在postgreSQL安装目录下 DB: 数据库名称 Table: 数据表名称 Relat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Postgres数据储存和缓存">
+<meta property="og:url" content="http://yoursite.com/2018/02/27/Postgres数据储存和缓存/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1.简介  此文主要针对postgreSQL对数据存放和数据的缓存结构和规则进行简单的分析。文章分为数据表和存储文件映射关系，数据缓存加载过程以及缓存中的page结构；由外到内的分析了数据存储与缓存相关内容。  2.如何查看数据表和存储文件映射关系 模    型： 名词解释： /data/base/: 一般在postgreSQL安装目录下 DB: 数据库名称 Table: 数据表名称 Relat">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/20180211161556.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/20180211161919.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/201802081104333410.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/20180212172055.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/71270397PlgG.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/71270866MVoo.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/71278967aVAr.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/712796454aL9.png">
+<meta property="og:updated_time" content="2018-02-27T09:48:05.872Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="Postgres数据储存和缓存">
+<meta name="twitter:description" content="1.简介  此文主要针对postgreSQL对数据存放和数据的缓存结构和规则进行简单的分析。文章分为数据表和存储文件映射关系，数据缓存加载过程以及缓存中的page结构；由外到内的分析了数据存储与缓存相关内容。  2.如何查看数据表和存储文件映射关系 模    型： 名词解释： /data/base/: 一般在postgreSQL安装目录下 DB: 数据库名称 Table: 数据表名称 Relat">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/20180211161556.png">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -149,76 +162,242 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-Postgres数据储存和缓存" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Postgres数据储存和缓存
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/02/27/Postgres数据储存和缓存/" class="archive-article-date">
+
+        
+        <a href="/2018/02/27/Postgres数据储存和缓存/" class="archive-article-date">
   	<time datetime="2018-02-27T09:47:43.698Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-27</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/02/27/Postgres数据储存和缓存/">Postgres数据储存和缓存</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1.简介"></a>1.简介</h3><p>  此文主要针对postgreSQL对数据存放和数据的缓存结构和规则进行简单的分析。文章分为数据表和存储文件映射关系，数据缓存加载过程以及缓存中的page结构；由外到内的分析了数据存储与缓存相关内容。</p>
+</li>
+<li><h3 id="2-如何查看数据表和存储文件映射关系"><a href="#2-如何查看数据表和存储文件映射关系" class="headerlink" title="2.如何查看数据表和存储文件映射关系"></a>2.如何查看数据表和存储文件映射关系</h3><ul>
+<li><h4 id="模-型："><a href="#模-型：" class="headerlink" title="模    型："></a>模    型：</h4><img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/20180211161556.png" alt="数据表与文件映射关系"></li>
+<li><h4 id="名词解释："><a href="#名词解释：" class="headerlink" title="名词解释："></a>名词解释：</h4><ul>
+<li><h5 id="data-base-一般在postgreSQL安装目录下"><a href="#data-base-一般在postgreSQL安装目录下" class="headerlink" title="/data/base/: 一般在postgreSQL安装目录下"></a>/data/base/: 一般在postgreSQL安装目录下</h5></li>
+<li><h5 id="DB-数据库名称"><a href="#DB-数据库名称" class="headerlink" title="DB: 数据库名称"></a>DB: 数据库名称</h5></li>
+<li><h5 id="Table-数据表名称"><a href="#Table-数据表名称" class="headerlink" title="Table: 数据表名称"></a>Table: 数据表名称</h5></li>
+<li><h5 id="Relation-File-表示关联的数据表文件；对以table名称文件的统称呼"><a href="#Relation-File-表示关联的数据表文件；对以table名称文件的统称呼" class="headerlink" title="Relation File: 表示关联的数据表文件；对以table名称文件的统称呼"></a>Relation File: 表示关联的数据表文件；对以table名称文件的统称呼</h5></li>
+</ul>
+</li>
+<li><h4 id="映射路径公式"><a href="#映射路径公式" class="headerlink" title="映射路径公式:"></a>映射路径公式:</h4>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/base/db/table</span><br></pre></td></tr></table></figure>
+</li>
+<li><h4 id="查看存储文件的3种方式："><a href="#查看存储文件的3种方式：" class="headerlink" title="查看存储文件的3种方式："></a>查看存储文件的3种方式：</h4>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">--基于表查询</span><br><span class="line">select pg_relation_filepath(&apos;friends&apos;);</span><br><span class="line">--基于表查询</span><br><span class="line">select oid, relfilenode, relname  from pg_class where relname=&apos;friends&apos;;</span><br><span class="line"></span><br><span class="line">--基于命令查询</span><br><span class="line">oid2name -d manu_db</span><br></pre></td></tr></table></figure>
+</li>
+<li><h4 id="源码参考："><a href="#源码参考：" class="headerlink" title="源码参考："></a>源码参考：</h4>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- File buf_init.c (./src/backend/storage/buffer/buf_init.c)</span><br><span class="line">    - Function InitBufferPool() 初始化缓存池</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><h3 id="3-数据缓存加载过程"><a href="#3-数据缓存加载过程" class="headerlink" title="3.数据缓存加载过程"></a>3.数据缓存加载过程</h3><ul>
+<li><h4 id="模-型：-1"><a href="#模-型：-1" class="headerlink" title="模   型："></a>模   型：</h4><p>  <img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/20180211161919.png" alt="文件映射缓存"></p>
+</li>
+<li><h4 id="名词解释：-1"><a href="#名词解释：-1" class="headerlink" title="名词解释："></a>名词解释：</h4><ul>
+<li><h5 id="BufferTag：bufferTag是bufferDesc的成员变量-SharedBuffHash中的key存的就是bufferTag的引用"><a href="#BufferTag：bufferTag是bufferDesc的成员变量-SharedBuffHash中的key存的就是bufferTag的引用" class="headerlink" title="BufferTag：bufferTag是bufferDesc的成员变量,SharedBuffHash中的key存的就是bufferTag的引用"></a>BufferTag：bufferTag是bufferDesc的成员变量,SharedBuffHash中的key存的就是bufferTag的引用</h5></li>
+<li><h5 id="Page：简单说page就是一个存放了多条数据记录的集合-page大小为8K-；当然有一定的存储规则"><a href="#Page：简单说page就是一个存放了多条数据记录的集合-page大小为8K-；当然有一定的存储规则" class="headerlink" title="Page：简单说page就是一个存放了多条数据记录的集合(page大小为8K)；当然有一定的存储规则"></a>Page：简单说page就是一个存放了多条数据记录的集合(page大小为8K)；当然有一定的存储规则</h5></li>
+<li><h5 id="SharedBuffHash：是一个map其中key中存放的是bufferTag，val中存放page的地址对应的hashCode"><a href="#SharedBuffHash：是一个map其中key中存放的是bufferTag，val中存放page的地址对应的hashCode" class="headerlink" title="SharedBuffHash：是一个map其中key中存放的是bufferTag，val中存放page的地址对应的hashCode"></a>SharedBuffHash：是一个map其中key中存放的是bufferTag，val中存放page的地址对应的hashCode</h5></li>
+<li><h5 id="Block：概念来自bufferTag中的成员变量BlockNumber，简单讲就是将整个表数据按照8K大小分割成为区块-BlockNumber就是对这些区块的号码"><a href="#Block：概念来自bufferTag中的成员变量BlockNumber，简单讲就是将整个表数据按照8K大小分割成为区块-BlockNumber就是对这些区块的号码" class="headerlink" title="Block：概念来自bufferTag中的成员变量BlockNumber，简单讲就是将整个表数据按照8K大小分割成为区块;BlockNumber就是对这些区块的号码"></a>Block：概念来自bufferTag中的成员变量BlockNumber，简单讲就是将整个表数据按照8K大小分割成为区块;BlockNumber就是对这些区块的号码</h5></li>
+</ul>
+</li>
+<li><h4 id="加载过程和置换算法"><a href="#加载过程和置换算法" class="headerlink" title="加载过程和置换算法"></a>加载过程和置换算法</h4><ul>
+<li><h5 id="存在空闲空间，则直接分配出空间给到缓存"><a href="#存在空闲空间，则直接分配出空间给到缓存" class="headerlink" title="存在空闲空间，则直接分配出空间给到缓存"></a>存在空闲空间，则直接分配出空间给到缓存</h5><ul>
+<li><strong>PostgreSQL会将数据表中数据按照8K进行分割</strong>；</li>
+<li><strong>PostgreSQL会产生对应的3块内存区域(BufferDescriptors、Shared Buffers和SharedBuffHash);</strong></li>
+<li><strong>BufferDesc可以通过BufferTag的引用在SharedBuffHash中查找当前block对应的hashCode,然后以hashCode再查找对应的page</strong></li>
+</ul>
+</li>
+<li><h5 id="Clock-Sweep置换算法"><a href="#Clock-Sweep置换算法" class="headerlink" title="Clock Sweep置换算法"></a>Clock Sweep置换算法</h5><img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/201802081104333410.png" alt=""><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">程序对每个block使用记次数usage_count,最大为5次。</span><br><span class="line">所有的buffer都不是空闲的，那么就剔除那个usage_count最小的。</span><br><span class="line">进行环形扫描，对扫描的block减一，最后看谁的usage_count先为0则进行剔除</span><br><span class="line">如上图：block_5减一后为0，所以会被优先剔除。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><h4 id="Shared-Buffers状态和命中率"><a href="#Shared-Buffers状态和命中率" class="headerlink" title="Shared Buffers状态和命中率"></a>Shared Buffers状态和命中率</h4><ul>
+<li><h5 id="命中和丢失"><a href="#命中和丢失" class="headerlink" title="命中和丢失"></a>命中和丢失</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">如果你访问的数据(某个8K block)；</span><br><span class="line">正好在shared buffer中，这叫命中，英文叫做hit；</span><br><span class="line">不在shared buffer中，这叫缺失 ，英文为miss；</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><h5 id="源码参考：-1"><a href="#源码参考：-1" class="headerlink" title="源码参考："></a>源码参考：</h5> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- File bufmgr.c (./src/backend/storage/buffer\bufmgr.c)</span><br><span class="line">    - function BufferAlloc() 分配数据缓存</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h3 id="4-Page结构和加载"><a href="#4-Page结构和加载" class="headerlink" title="4.Page结构和加载"></a>4.Page结构和加载</h3><ul>
+<li><h5 id="PageHeader结构和page内存模型"><a href="#PageHeader结构和page内存模型" class="headerlink" title="PageHeader结构和page内存模型"></a>PageHeader结构和page内存模型</h5>  <img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/20180212172055.png" alt=""><ul>
+<li><strong>pageHeader比较重要的成员变量包括pd_lower,pd_upper,pd_special和pd_linp:</strong><ul>
+<li>pd_lower：是指向item末尾的指针(下一个item开始的位置)</li>
+<li>pd_upper：是指向tuple开始的指针</li>
+<li>pd_special：是指向special空间开始的指针</li>
+<li>这样就能通过如上3个指针来定位page内存中3块的区域了(当然pageHeader是固定大小),</li>
+</ul>
+</li>
+<li><strong>ItemData:</strong><ul>
+<li>lp_off：表示Tuple的偏移位置(offset)</li>
+<li>lp_flags：表示Tuple的状态</li>
+<li>lp_len：表示Tuple的大小</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h5 id="page初始化-amp-amp-添加记录-amp-amp-删除记录"><a href="#page初始化-amp-amp-添加记录-amp-amp-删除记录" class="headerlink" title="page初始化 &amp;&amp; 添加记录 &amp;&amp; 删除记录"></a>page初始化 &amp;&amp; 添加记录 &amp;&amp; 删除记录</h5><ul>
+<li><strong>postgreSQL会对page进行初始化，完成PageHeader和Spceial space位置的确定;</strong><br>  <img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/71270397PlgG.png" alt=""></li>
+<li><strong>添加一条记录会向pageHeader中加入item，这个item会指向tuple的地址;</strong><br>  <img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/71270866MVoo.png" alt=""></li>
+<li><strong>删除一条记录则会先找到对应的item，进行删除然后移动所有item,填补空缺的item的位置;然后删除Tuple,移动删除的Tuple之前的Tuples向后填充Tuple的空位;</strong><br>  <img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/71278967aVAr.png" alt=""><br>  <img src="https://raw.githubusercontent.com/walleiptXX/blogImgs/master/712796454aL9.png" alt=""></li>
+</ul>
+</li>
+<li><h5 id="源码参考：-2"><a href="#源码参考：-2" class="headerlink" title="源码参考："></a>源码参考：</h5>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- File bufpage.c (./src/backend/storage/page/bufpage.c)</span><br><span class="line">    - function PageInit() 初始化page结构</span><br><span class="line">    - function PageIsVerified() </span><br><span class="line">    - function PageAddItemExtended() 添加记录核心方法</span><br><span class="line">    - function PageAddItem() 添加记录方法调用PageAddItemExtended()方法</span><br><span class="line">    - function PageGetTempPage()</span><br><span class="line">    - function PageGetTempPageCopy()</span><br><span class="line">    - function PageGetTempPageCopySpecial()</span><br><span class="line">    - function PageRestoreTempPage()</span><br><span class="line">    - struct itemIdSortData</span><br><span class="line">    - itemIdSortData *itemIdSort</span><br><span class="line">    - function itemoffcompare()</span><br><span class="line">    - function compactify_tuples()</span><br><span class="line">    - function PageRepairFragmentation()</span><br><span class="line">    - function PageGetFreeSpace()</span><br><span class="line">    - function PageGetExactFreeSpace()</span><br><span class="line">    - function PageGetHeapFreeSpace()</span><br><span class="line">    - function PageIndexTupleDelete() 删除记录方法</span><br><span class="line">    - function PageIndexDeleteNoCompact()</span><br><span class="line">    - function PageSetChecksumCopy()</span><br><span class="line">    - function PageSetChecksumInplace()  </span><br><span class="line">- File bufpage.h (./src/include/storage/bufpage.h)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><h3 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h3><ul>
+<li>postgreSQL 9.6.2 源码  </li>
+<li><a href="http://blog.chinaunix.net/uid-24774106-id-3761861.html" target="_blank" rel="noopener">http://blog.chinaunix.net/uid-24774106-id-3761861.html</a></li>
+</ul>
+</li>
+</ul>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/02/27/Postgres数据储存和缓存/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/02/27/PostgreSQL源码安装/" class="archive-article-date">
-  	<time datetime="2018-02-27T09:46:19.412Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-27</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/02/27/PostgreSQL源码安装/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PostgreSQL源码安装</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/02/27/PostgreSQL源码安装/">PostgreSQL源码安装</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -241,8 +420,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
